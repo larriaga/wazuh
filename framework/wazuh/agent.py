@@ -28,6 +28,8 @@ import re
 import fcntl
 from json import loads
 
+import time
+
 try:
     from urllib2 import urlopen, URLError, HTTPError
 except ImportError:
@@ -771,6 +773,7 @@ class Agent:
         :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
         """
 
+        start = time.time()
         db_global = glob(common.database_path_global)
         if not db_global:
             raise WazuhException(1600)
@@ -987,6 +990,10 @@ class Agent:
                 data_tuple['ip'] = '127.0.0.1'
 
             data['items'].append(data_tuple)
+
+        end = time.time()
+        elapsed_time = end - start
+        data["Total_manager"] = elapsed_time
 
         return data
 

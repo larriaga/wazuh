@@ -106,14 +106,14 @@ class WazuhClusterClient(asynchat.async_chat):
         self.received_data.append(data)
 
     def found_terminator(self):
-        self.response = json.loads(self.f.decrypt(''.join(self.received_data)))
+        self.response = json.loads(''.join(self.received_data))
         self.close()
 
     def handle_write(self):
         if self.file is not None:
-            msg = self.f.encrypt(self.data.encode()) + self.f.encrypt(self.file) + '\n\t\t\n'
+            msg = self.data.encode() + self.file + '\n\t\t\n'
         else:
-            msg = self.f.encrypt(self.data.encode()) + '\n\t\t\n'
+            msg = self.data.encode() + '\n\t\t\n'
 
         i = 0
         msg_len = len(msg)
@@ -303,7 +303,7 @@ def get_nodes(updateDBname=False):
             continue
 
         if config_cluster['node_type'] == 'master' or \
-           response['type'] == 'master' or url == "localhost":
+           response['type'] == 'master' or response["localhost"]:
             data.append({'url':url, 'node':response['node'], 'localhost': response['localhost'],
                          'status':'connected', 'cluster':response['cluster']})
 

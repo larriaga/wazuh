@@ -92,7 +92,7 @@ class WazuhClusterHandler(asynchat.async_chat):
     def found_terminator(self):
         response = b''.join(self.received_data)
         error = 0
-        cmd = self.f.decrypt(response[:common.cluster_sync_msg_size]).decode()
+        cmd = response[:common.cluster_protocol_plain_size].decode()
         self.command = cmd.split(" ")
         logging.debug("Command received: {0}".format(self.command))
 
@@ -114,7 +114,7 @@ class WazuhClusterHandler(asynchat.async_chat):
                 res = get_node()
 
             elif message == 'zip':
-                zip_bytes = self.f.decrypt(response[common.cluster_sync_msg_size:])
+                zip_bytes = response[common.cluster_protocol_plain_size:]
                 res = extract_zip(zip_bytes)
                 self.restart_after_sync.value = 'T' if res['restart'] else 'F'
 
@@ -136,7 +136,7 @@ class WazuhClusterHandler(asynchat.async_chat):
 
             elif message == protocol_messages['DISTRIBUTED_REQUEST']:
                 api_request_type = self.command[1]
-                data = json.loads(self.f.decrypt(response[common.cluster_sync_msg_size:]))
+                data = json.loads(response[common.cluster_protocol_plain_size:])
                 from_cluster = True
                 agents = []
                 args = {}
@@ -174,7 +174,7 @@ class WazuhClusterHandler(asynchat.async_chat):
 
 
     def handle_write(self):
-        msg = self.f.encrypt(self.data) + '\n'
+        msg = self.data + '\n'
         i = 0
         msg_len = len(msg)
         while i < msg_len:
