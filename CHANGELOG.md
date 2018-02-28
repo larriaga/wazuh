@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - Added delay between message delivery for every module. ([#389](https://github.com/wazuh/wazuh/pull/389))
 - Verify all modules for the shared configuration. ([#408](https://github.com/wazuh/wazuh/pull/408))
 - Updated OpenSSL library to 1.1.0g.
-
+- Support for relative/full/network paths in the CIS-CAT configuration. ([#419](https://github.com/wazuh/wazuh/pull/419))
 ### Fixed
 
 - Fixed crash in Agentd when testing Syscollector configuration from agent.conf file.
