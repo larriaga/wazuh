@@ -463,10 +463,15 @@ def send_recv_and_check(cluster_socket, query):
     send_to_socket(cluster_socket, query)
     received = receive_data_from_db_socket(cluster_socket)
     if received != "Command OK":
-        logging.debug("Query {} did not executed correctly: {}".format(query, received))
+        logging.debug("Query {} did not executed correctly: {}".format(query.split(' ')[0], received))
 
 def send_to_socket(cluster_socket, query):
-    cluster_socket.send(query.encode())
+    # add the query size to the message
+    query_size = len(query)+1
+    query = "{} {}".format(query_size+len(str(query_size)), query)
+    sent = cluster_socket.send(query.encode())
+    if sent != len(query):
+        logging.debug("Error sending query: sent {}/{}".format(sent, len(query)))
 
 def scan_for_new_files():
     cluster_socket = connect_to_db_socket()
